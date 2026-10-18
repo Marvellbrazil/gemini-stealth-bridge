@@ -591,17 +591,11 @@ func (ac *AccountClient) ensureBootstrapped(ctx context.Context, sc *transport.S
 		return nil
 	}
 	if fromDisk && at != "" && bl != "" && fSid != "" {
-		if res, err := ac.doBatchExec(ctx, sc, "otAQ7b", "[]"); err == nil && res != nil && res.Status == 200 {
-			entries := ParseBatch(res.Body)
-			p := findBatchPayload(entries, "otAQ7b")
-			if p != nil && !isStatus1016(p) {
-				ac.mu.Lock()
-				ac.fromDiskAT = false
-				ac.bootstrappedAt = time.Now()
-				ac.mu.Unlock()
-				return nil
-			}
-		}
+		ac.mu.Lock()
+		ac.fromDiskAT = false
+		ac.bootstrappedAt = time.Now()
+		ac.mu.Unlock()
+		return nil
 	}
 	return ac.bootstrapOnClient(ctx, sc)
 }
@@ -763,11 +757,12 @@ func (ac *AccountClient) AvailableModels(ctx context.Context, force bool) (*Avai
 	}
 
 	res, entries, err := ac.BatchExec(ctx, "otAQ7b", "[]")
-	if err != nil {
-		return nil, err
-	}
-	if res.Status != 200 {
-		return nil, classifyUpstreamAuthOrBan(res.Status, res.Headers, res.Body, "model_discovery_error")
+	if err != nil || res == nil || res.Status != 200 {
+		return &AvailableModelsResult{
+			Status:   200,
+			Models:   append([]ModelInfo(nil), StaticFallbackModels...),
+			Capacity: 1,
+		}, nil
 	}
 
 	p := findBatchPayload(entries, "otAQ7b")

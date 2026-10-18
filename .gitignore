@@ -1,5 +1,6 @@
 # Compiled binaries & test artifacts
 /gsb
+/gsb.exe
 *.test
 *.prof
 *.out

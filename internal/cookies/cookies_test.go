@@ -15,6 +15,7 @@ import (
 	"strings"
 	"testing"
 	"time"
+	"runtime"
 
 	"github.com/azrinaldi/gemini-stealth-bridge/internal/transport"
 	fhttp "github.com/bogdanfinn/fhttp"
@@ -140,7 +141,7 @@ func TestSaveAndLoadAccountFile(t *testing.T) {
 		t.Fatalf("unexpected loaded record: %+v", loaded)
 	}
 	st, _ := os.Stat(path)
-	if st.Mode().Perm() != 0o600 {
+	if runtime.GOOS != "windows" && st.Mode().Perm() != 0o600 {
 		t.Fatalf("expected mode 0600, got %o", st.Mode().Perm())
 	}
 }

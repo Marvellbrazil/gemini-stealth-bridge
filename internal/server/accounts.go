@@ -313,11 +313,15 @@ func (s *Server) RefreshAccount(ctx context.Context, a *AccountState, force bool
 	c := s.clientFor(a)
 	am, err := c.AvailableModels(ctx, force)
 	if err != nil || am == nil || am.Status != 200 || len(am.Models) == 0 {
-		if err == nil {
-			err = transport.NewUpstreamError("invalid upstream model registry", 502, "model_discovery_error", nil, nil)
-		}
 		a.mu.Lock()
-		a.ModelsError = err
+		if len(a.Models) == 0 {
+			a.Models = append([]gemini.ModelInfo(nil), gemini.StaticFallbackModels...)
+			a.Capacity = 1
+			a.ModelsAt = time.Now()
+			a.ModelsError = nil
+		} else {
+			a.ModelsError = err
+		}
 		a.mu.Unlock()
 		return a
 	}

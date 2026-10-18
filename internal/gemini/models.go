@@ -30,6 +30,40 @@ type ModelInfo struct {
 	ThinkingPolicyKnown bool `json:"thinkingPolicyKnown,omitempty"`
 }
 
+// StaticFallbackModels provides canonical model definitions when live discovery via otAQ7b is unavailable.
+var StaticFallbackModels = []ModelInfo{
+	{
+		ModelID:       "gemini-2.5-flash",
+		ModelName:     "gemini-2.5-flash",
+		DisplayName:   "Gemini 2.5 Flash",
+		Aliases:       []string{"gemini-flash", "flash"},
+		Description:   "Fast and versatile multimodal model for everyday tasks",
+		Capacity:      1,
+		CapacityField: 12,
+		ModelNumber:   1,
+	},
+	{
+		ModelID:       "gemini-2.5-pro",
+		ModelName:     "gemini-2.5-pro",
+		DisplayName:   "Gemini 2.5 Pro",
+		Aliases:       []string{"gemini-pro", "pro"},
+		Description:   "Complex reasoning and coding model with extended thinking",
+		Capacity:      2,
+		CapacityField: 12,
+		ModelNumber:   1,
+	},
+	{
+		ModelID:       "gemini-thinking",
+		ModelName:     "gemini-thinking",
+		DisplayName:   "Gemini Thinking",
+		Aliases:       []string{"thinking", "gemini-2.0-flash-thinking"},
+		Description:   "Extended reasoning and thought streaming model",
+		Capacity:      1,
+		CapacityField: 12,
+		ModelNumber:   1,
+	},
+}
+
 // QuotaBucket represents one rate-limit/quota bucket returned by the qpEbW RPC.
 type QuotaBucket struct {
 	ID              string   `json:"id"`
